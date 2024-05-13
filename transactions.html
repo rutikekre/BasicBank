@@ -1,0 +1,98 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+        crossorigin="anonymous">
+
+
+    <!--  JQuery CDN -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <!-- Datatables CDN -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.0.6/css/dataTables.dataTables.css" />
+    <script src="https://cdn.datatables.net/2.0.6/js/dataTables.js"></script>
+</head>
+
+<body class="bg-dark text-light">
+
+    <div class="container">
+        <div class="row d-flex justify-content-center my-5">
+            <div class="col-md-10 d-flex justify-content-center">
+                <table class="text-light table table-dark table-hover" id="myTable">
+                    <thead>
+                        <tr>
+                            <th>Transaction ID</th>
+                            <th>Timestamp</th>
+                            <th>Transaction Type</th>
+                            <th>Amount</th>
+                            <th>Account From</th>
+                            <th>Account To</th>
+                            <th>Description</th>
+                            <th>Status</th>
+                            <th>Transaction Fee</th>
+                        </tr>
+                    </thead>
+                    <tbody id="data_body">
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+</body>
+
+</html>
+
+
+<script>
+    let data = ''
+
+    fetch('./transactions.json').then(response => { return response.json() }).then(res => {
+        data = res;
+    }).then(function () {
+        let data_body = document.getElementById('data_body');
+
+        let arr_length = data['transactions'].length;
+
+        for (i = 0; i < arr_length; i++) {
+            tr = `
+            <tr>
+                <td>`+ data['transactions'][i]["transaction_id"] + `</td>
+                <td>`+ data['transactions'][i]["timestamp"] + `</td>
+                <td>`+ data['transactions'][i]["transaction_type"] + `</td>
+                <td>`+ data['transactions'][i]["amount"] + `</td>
+                <td>`+ data['transactions'][i]["account_from"] + `</td>
+                <td>`+ data['transactions'][i]["account_to"] + `</td>
+                <td>`+ data['transactions'][i]["description"] + `</td>
+                <td>`+ data['transactions'][i]["status"] + `</td>
+                <td>`+ data['transactions'][i]["transaction_fee"] + `</td>
+            </tr>
+        `
+            
+            if(
+                (data['transactions'][i]["account_to"] == '1000002' && data['transactions'][i]["transaction_type"] == 'credit')
+                ||
+                (data['transactions'][i]["account_from"] == '1000002' && data['transactions'][i]["transaction_type"] == 'debit')
+        )
+            data_body.innerHTML = data_body.innerHTML + tr;
+        }
+
+    }).then(
+        function(){
+            let table = new DataTable('#myTable');
+        }
+    )
+
+
+
+
+
+
+</script>
