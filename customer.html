@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bank Customer Profile</title>
+
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+    <!-- Custom CSS -->
+    <style>
+        .profile-img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin-bottom: 20px;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+
+<body class="bg-dark text-light">
+
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-secondary">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#">Navbar</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="#">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">About</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Services</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Contact</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+
+    <main>
+        <div class="container mt-4">
+            <div class="row">
+                <div class="col-md-4 border-end">
+                    <div class="text-center">
+                        <img src="static/profile.png" alt="Profile Picture" class="profile-img">
+                        <h2>{{data[0]['first_name'] + ' ' + data[0]['last_name']}}</h2>
+                        <p>Email: {{ data[0]['email'] }}</p>
+                        <p>Account Number: {{ data[0]['account_number'] }}</p>
+                        <p>Balance: ${{ data[0]['account_balance'] }}</p>
+                    </div>
+                    <hr>
+                    <div class="text-center">
+                        <button class="btn btn-secondary mt-2" id="seeProfileBtn">See Profile</button>
+                        <button class="btn btn-primary mt-2" id="transferBtn">Transfer Money</button>
+                        <button class="btn btn-primary mt-2" id="transactionHistoryBtn">Transaction History</button>
+                    </div>
+                </div>
+
+                <div class="col-md-8 px-5">
+                    <!-- Alerts -->
+                    <div class="container" id="customerAlerts">
+                        <div class="row justify-content-center">
+                            <div class="col-md-12">
+                                {% if data[1] == 1 %}
+                                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                    <strong>Transaction Successfull!</strong>
+                                    {{session.get('last_success_transaction_amount')}} debited from your account and
+                                    credited to <strong>Account No.
+                                        {{session.get('last_success_account_transfer_no')}}</strong>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                        aria-label="Close"></button>
+                                </div>
+
+                                {%elif data[1] == 2 %}
+                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                    <strong>Transaction Failed!</strong> <br> <strong>Reason :</strong> Insufficient
+                                    balance in your account.
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                        aria-label="Close"></button>
+                                </div>
+
+
+                                {% elif data[1] == 3 %}
+                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                    <strong>Transaction Failed!</strong> <br> <strong>Reason :</strong> Recipient
+                                    account does not exist.
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                        aria-label="Close"></button>
+                                </div>
+
+                                {%elif data[1] == 4%}
+                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                    <strong>Transaction Failed!</strong> <br> <strong>Reason :</strong> Something went
+                                    wrong.
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                        aria-label="Close"></button>
+                                </div>
+
+                                {%elif data[1] == 5%}
+                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                    <strong>Transaction Failed!</strong> <br> <strong>Reason :</strong> Invalid transfer
+                                    amount.
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                        aria-label="Close"></button>
+                                </div>
+
+                                {%endif%}
+
+
+
+
+
+
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="container" id="customerProfileField">
+                        <h2 class="text-center mb-4">Customer Profile</h2>
+                        <div class="row justify-content-center">
+                            <div class="col-md-5">
+                                <p><strong>Name:</strong> {{data[0]['first_name'] + ' ' + data[0]['last_name']}} </p>
+                                <p><strong>Date of Birth:</strong> {{ data[0]['date_of_birth'] }}</p>
+                                <p><strong>Gender:</strong> {{ data[0]['gender'] }} </p>
+                                <p><strong>Email:</strong> {{ data[0]['email'] }} </p>
+                                <p><strong>Phone Number:</strong> {{ data[0]['phone_number'] }}</p>
+                                <p><strong>Address:</strong> {{ data[0]['address'] }}</p>
+                                <p><strong>City:</strong> {{ data[0]['city'] }} </p>
+                                <p><strong>State/Province:</strong> {{ data[0]['state_province'] }} </p>
+                                <p><strong>Country:</strong> {{ data[0]['country'] }}</p>
+                                <p><strong>Postal Code:</strong> 10001</p>
+                            </div>
+                            <div class="col-md-5">
+                                <p><strong>Customer ID:</strong> {{ data[0]['customer_id'] }} </p>
+                                <p><strong>Account Number:</strong> {{ data[0]['account_number'] }} </p>
+                                <p><strong>Account Type:</strong> {{ data[0]['account_type'] }} </p>
+                                <p><strong>Account Balance:</strong> {{ data[0]['account_balance'] }} </p>
+                                <p><strong>Account Status:</strong> {{ data[0]['account_status'] }}</p>
+                                <p><strong>Date Account Opened:</strong> {{ data[0]['date_account_opened'] }}</p>
+                                <p><strong>Last Transaction Date:</strong> {{ data[0]['last_transaction_date'] }}</p>
+                                <p><strong>Branch ID:</strong> {{ data[0]['branch_id']}}</p>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+
+                    <div class="container hidden" id="transferMoneyField">
+                        <h2 class="text-center mb-4">Transfer Money</h2>
+                        <form id="transferForm" method="post" action="/transferMoney">
+                            <div class="form-group hidden">
+                                <input type="text" name="customer_id" value="{{data[0]['customer_id']}}" readonly
+                                    required>
+                                <input type="text" name="account_number" value="{{data[0]['account_number']}}" readonly
+                                    required>
+                            </div>
+                           
+                            <div class="form-group mt-2">
+                                <label for="recipient">Recipient Name:</label>
+                                <input type="text" class="form-control" name="recipient_name" id="recipient"
+                                    placeholder="Recipient's Name" required>
+                            </div>
+                           
+                            <div class="form-group mt-2">
+                                <label for="recipient">Recipient Account Number:</label>
+                                <input type="text" class="form-control" id="recipient" name="recipient_account_number"
+                                    placeholder="Recipient's Account Number" required>
+                            </div>
+                           
+                            <div class="form-group mt-2">
+                                <label for="amount">Amount:</label>
+                                <input type="number" name="amount" class="form-control" id="amount" placeholder="Amount"
+                                    required>
+                            </div>
+
+                            <div class="form-group mt-2">
+                                <label for="note">Note:</label>
+                                <textarea class="form-control" id="note" rows="1" name="note"
+                                    placeholder="Optional Note" required></textarea>
+                            </div>
+
+                            <div class="form-group mt-2">
+                                <label for="trans_type">Transaction Type:</label>
+                                <input class="" type="radio" name="trans_type" name="transaction_type" id="trans_type"
+                                    required checked> IMPS
+                                <input class="" type="radio" name="trans_type" name="transaction_type" id="trans_type">
+                                NFTS
+                            </div>
+
+                            <div class="form-group mt-2">
+                                <button type="submit" class="btn btn-primary btn-block w-100">Transfer Money</button>
+                            </div>
+                        </form>
+                    </div>
+
+
+
+                    <div class="container hidden" id="transactionHistoryField">
+                        <h2 class="text-center mb-4">Transaction Data</h2>
+                        <table class="table table-dark table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Transaction ID</th>
+                                    <th>Description</th>
+                                    <th>Amount</th>
+                                    <th>Type</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>2024-05-01</td>
+                                    <td>78931456954</td>
+                                    <td>Online Shopping</td>
+                                    <td>$50.00</td>
+                                    <td>Debit</td>
+                                </tr>
+                                <tr>
+                                    <td>2024-05-03</td>
+                                    <td>78931456954</td>
+                                    <td>Restaurant Bill</td>
+                                    <td>$30.00</td>
+                                    <td>Debit</td>
+                                </tr>
+                                <tr>
+                                    <td>2024-05-05</td>
+                                    <td>78931456954</td>
+                                    <td>Salary Deposit</td>
+                                    <td>$2000.00</td>
+                                    <td>Credit</td>
+                                </tr>
+                                <!-- Add more rows as needed -->
+                            </tbody>
+                        </table>
+                    </div>
+
+
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+</body>
+
+</html>
+
+
+
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"></script>
+
+
+<script src="{{ url_for('static', filename='customer.js') }}"></script>
